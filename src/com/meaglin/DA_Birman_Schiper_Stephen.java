@@ -12,45 +12,18 @@ public class DA_Birman_Schiper_Stephen extends UnicastRemoteObject implements DA
 
     int id;
     List<PendingMessage> buffer;
+    List<PendingMessage> delivered;
     int[] clock;
-
-    public class PendingMessage {
-        private int node;
-        private String message;
-        private int[] clock;
-
-        PendingMessage(int node, String message, int[] clock) {
-            this.node = node;
-            this.message = message;
-            this.clock = clock;
-        }
-
-        public boolean canAccept(int[] localClock) {
-            int[] V = localClock.clone();
-            V[node] += 1;
-            for(int i = 0; i < V.length; i += 1) {
-                if (V[i] < clock[i]) {
-                    return false;
-                }
-            }
-            return true;
-        }
-    }
 
     public DA_Birman_Schiper_Stephen(int id, int nodes) throws RemoteException {
         super();
         this.id = id;
         clock = new int[nodes];
-        buffer = new ArrayList<>(0);
+        buffer = new ArrayList<>();
+        delivered = new ArrayList<>();
     }
 
     public void receive(int id, String message, int[] senderClock) {
-        try {
-            Thread.sleep((long)(Math.random() * 50));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
         System.out.println("R[" + this.id + "->" + id + "]" + message);
 //        System.out.println("[" + id + "->" + this.id + "](" + Arrays.toString(clock) + ";" + Arrays.toString(senderClock) + "):" + message);
         PendingMessage msg = new PendingMessage(id, message, senderClock);
@@ -98,8 +71,12 @@ public class DA_Birman_Schiper_Stephen extends UnicastRemoteObject implements DA
         synchronized (clock) {
             clock[message.node] += 1;
         }
+        synchronized (delivered) {
+            delivered.add(message);
+        }
         System.out.println("D[" + message.node + "->" + id + "]" + message.message);
 //        System.out.println("[Node " + message.node + "->" + id + "]" + message.message);
         checkBuffer();
+
     }
 }
