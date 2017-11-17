@@ -24,6 +24,7 @@ public class ServerRunner implements Runnable {
 
 //            Thread.sleep(getRandom(1000));
             iface.broadcast("Hallo iedereen");
+            iface.broadcast("Hallo iedereen2");
         } catch (Exception e) {
             e.printStackTrace();
         }

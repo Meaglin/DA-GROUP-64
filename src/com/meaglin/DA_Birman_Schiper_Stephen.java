@@ -45,6 +45,13 @@ public class DA_Birman_Schiper_Stephen extends UnicastRemoteObject implements DA
     }
 
     public void receive(int id, String message, int[] senderClock) {
+        try {
+            Thread.sleep((long)(Math.random() * 50));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("R[" + this.id + "->" + id + "]" + message);
 //        System.out.println("[" + id + "->" + this.id + "](" + Arrays.toString(clock) + ";" + Arrays.toString(senderClock) + "):" + message);
         PendingMessage msg = new PendingMessage(id, message, senderClock);
         if (msg.canAccept(clock)) {
@@ -91,7 +98,8 @@ public class DA_Birman_Schiper_Stephen extends UnicastRemoteObject implements DA
         synchronized (clock) {
             clock[message.node] += 1;
         }
-        System.out.println("[Node " + message.node + "->" + id + "]" + message.message);
+        System.out.println("D[" + message.node + "->" + id + "]" + message.message);
+//        System.out.println("[Node " + message.node + "->" + id + "]" + message.message);
         checkBuffer();
     }
 }
