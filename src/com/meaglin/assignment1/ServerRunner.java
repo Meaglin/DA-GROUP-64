@@ -1,4 +1,4 @@
-package com.meaglin;
+package com.meaglin.assignment1;
 
 import java.rmi.Naming;
 
