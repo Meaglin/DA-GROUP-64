@@ -90,11 +90,11 @@ public class DA_Peterson extends UnicastRemoteObject implements DA_Peterson_RMI 
     }
 
     String getNodeUrl() {
-        return config.getUrl("node_" + id);
+        return config.getUrl(id);
     }
 
     String nextNodeUrl() {
-        return config.getUrl("node_" + nextNodeId());
+        return config.getUrl(nextNodeId());
     }
 
     int nextNodeId() {
