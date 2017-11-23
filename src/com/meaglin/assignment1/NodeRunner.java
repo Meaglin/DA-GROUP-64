@@ -2,11 +2,11 @@ package com.meaglin.assignment1;
 
 import java.rmi.Naming;
 
-public class ServerRunner implements Runnable {
+public class NodeRunner implements Runnable {
 
     private DA_Birman_Schiper_Stephen iface;
     private int id, nodeCount;
-    public ServerRunner(int id, int nodeCount) {
+    public NodeRunner(int id, int nodeCount) {
         this.id = id;
         this.nodeCount = nodeCount;
         try {
