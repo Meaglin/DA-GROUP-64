@@ -31,18 +31,22 @@ public class DA_Birman_Schiper_Stephen extends UnicastRemoteObject implements DA
             deliver(msg);
             return;
         }
-        buffer.add(msg);
+        synchronized (buffer) {
+            buffer.add(msg);
+        }
     }
 
     private void checkBuffer() {
-        Iterator<PendingMessage> it = buffer.iterator();
         PendingMessage delivarable = null;
-        while(it.hasNext()) {
-            PendingMessage msg = it.next();
-            if (msg.canAccept(clock)) {
-                it.remove();
-                delivarable = msg;
-                break;
+        synchronized(buffer) {
+            Iterator<PendingMessage> it = buffer.iterator();
+            while (it.hasNext()) {
+                PendingMessage msg = it.next();
+                if (msg.canAccept(clock)) {
+                    it.remove();
+                    delivarable = msg;
+                    break;
+                }
             }
         }
         if (delivarable != null) {
