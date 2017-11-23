@@ -5,6 +5,8 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DA_Peterson extends UnicastRemoteObject implements DA_Peterson_RMI {
 
@@ -15,19 +17,30 @@ public class DA_Peterson extends UnicastRemoteObject implements DA_Peterson_RMI 
     int transmitId;
     int initialReceiveId;
 
-    boolean elected, relay;
+    boolean elected, relay, canReceive;
+
+    List<Integer> pendingReceive;
 
     public DA_Peterson(int nodeId, int nodeCount, Config configuration) throws RemoteException {
         super();
         id = nodeId;
         this.nodeCount = nodeCount;
         this.config = configuration;
+        this.pendingReceive = new ArrayList<>();
     }
 
     public void start() {
         transmitId = id;
         initialReceiveId = -1;
         send(id);
+        canReceive = true;
+        for(int el : pendingReceive) {
+            try {
+                receive(el);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /*
@@ -45,6 +58,10 @@ public class DA_Peterson extends UnicastRemoteObject implements DA_Peterson_RMI 
      */
     public void receive(int nodeId) throws java.rmi.RemoteException {
         synchronized (this) {
+            if (!canReceive) {
+                pendingReceive.add(nodeId);
+                return;
+            }
             if (nodeId == id) {
                 System.out.println("[Node #" + id + "] is elected");
                 elected = true;
@@ -80,7 +97,7 @@ public class DA_Peterson extends UnicastRemoteObject implements DA_Peterson_RMI 
     }
 
     public void send(int nodeId) {
-        System.out.println("[Node #" + id + "] Sending:" + nodeId);
+        System.out.println("[Node #" + id + "] Sending to " + nextNodeUrl() + ":" + nodeId);
         try {
             DA_Peterson_RMI iface = (DA_Peterson_RMI) Naming.lookup(nextNodeUrl());
             iface.receive(nodeId);
