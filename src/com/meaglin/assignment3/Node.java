@@ -1,6 +1,8 @@
 package com.meaglin.assignment3;
 
-public class Node {
+import java.io.Serializable;
+
+public class Node implements Serializable {
     final int id;
     final String ip;
 

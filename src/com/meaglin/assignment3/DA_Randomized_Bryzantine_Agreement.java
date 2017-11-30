@@ -14,14 +14,17 @@ public class DA_Randomized_Bryzantine_Agreement extends UnicastRemoteObject impl
 
     List<Message> bufferedMessages;
 
+    Node[] nodes;
+
     int value;
 
     boolean decided;
 
-    public DA_Randomized_Bryzantine_Agreement(int nodeId, int nodeCount) throws RemoteException {
+    public DA_Randomized_Bryzantine_Agreement(int nodeId, int nodeCount, Node[] nodes) throws RemoteException {
         super();
         id = nodeId;
         this.nodeCount = nodeCount;
+        this.nodes = nodes;
     }
 
     public synchronized void start() {

@@ -5,9 +5,13 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.Enumeration;
 
-public class Server {
+public class Server extends UnicastRemoteObject {
+
+    public Server() throws RemoteException {
+    }
 
     public static String determineIP() throws SocketException {
         Enumeration e = NetworkInterface.getNetworkInterfaces();
