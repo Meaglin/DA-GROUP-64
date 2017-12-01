@@ -1,6 +1,8 @@
 package com.meaglin.assignment3;
 
-public interface Slave_RMI {
+import java.rmi.Remote;
+
+public interface Slave_RMI extends Remote {
 
 
     void notify(Node[] nodes);
