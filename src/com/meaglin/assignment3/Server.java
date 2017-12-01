@@ -39,6 +39,8 @@ public class Server extends UnicastRemoteObject {
     }
 
     public static void setupServer() throws SocketException {
+
+//        System.ge
 //        System.setProperty("java.security.policy","file:///Users/verburg/IdeaProjects/DAAssignment1/my.policy");
         System.setProperty("java.rmi.server.hostname", determineIP());
         try {java.rmi.registry.LocateRegistry.createRegistry(1099);} catch (RemoteException e) {e.printStackTrace();}

@@ -23,9 +23,8 @@ public class Master extends Server implements Master_RMI {
         }
         System.out.println("My IP: " + myIp);
         setupServer();
-
         Master master = new Master();
-        Naming.bind("rmi://127.0.0.1/master", master);
+        Naming.bind("rmi://127.0.0.1:1099/master", master);
 
         while(true) {
             Thread.sleep(1000);
@@ -36,9 +35,30 @@ public class Master extends Server implements Master_RMI {
             }
         }
         myNodes = master.register(5, myIp);
+
+        // First notify all nodes
         for(String ip : slaves) {
-            Slave_RMI slave = (Slave_RMI) Naming.lookup("rmi://" + ip + "/slave");
-            slave.start(nodes.toArray(new Node[nodes.size()]));
+            Slave_RMI slave = (Slave_RMI) Naming.lookup("rmi://" + ip + ":1099/slave");
+            slave.notify(nodes.toArray(new Node[nodes.size()]));
+        }
+
+        // Initialize own nodes
+        List<DA_Randomized_Bryzantine_Agreement> das = new ArrayList<>();
+        for (Node node : myNodes) {
+            try {
+                DA_Randomized_Bryzantine_Agreement da = new DA_Randomized_Bryzantine_Agreement(node.id, nodes.toArray(new Node[nodes.size()]));
+                das.add(da);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+        // Startup all nodes
+        for (String ip: slaves) {
+            Slave_RMI slave = (Slave_RMI) Naming.lookup("rmi://" + ip + ":1099/slave");
+            slave.start();
+        }
+        for (DA_Randomized_Bryzantine_Agreement da : das) {
+            new Thread(da).start();
         }
     }
 

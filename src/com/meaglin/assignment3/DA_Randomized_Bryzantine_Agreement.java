@@ -1,11 +1,11 @@
 package com.meaglin.assignment3;
 
+import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
 import java.util.List;
 
-public class DA_Randomized_Bryzantine_Agreement extends UnicastRemoteObject implements DA_Randomized_Bryzantine_Agreement_RMI {
+public class DA_Randomized_Bryzantine_Agreement extends UnicastRemoteObject implements Runnable, DA_Randomized_Bryzantine_Agreement_RMI {
 
 
     int id, nodeCount;
@@ -20,11 +20,21 @@ public class DA_Randomized_Bryzantine_Agreement extends UnicastRemoteObject impl
 
     boolean decided;
 
-    public DA_Randomized_Bryzantine_Agreement(int nodeId, int nodeCount, Node[] nodes) throws RemoteException {
+    public DA_Randomized_Bryzantine_Agreement(int nodeId, Node[] nodes) throws RemoteException {
         super();
         id = nodeId;
-        this.nodeCount = nodeCount;
+        this.nodeCount = nodes.length;
         this.nodes = nodes;
+
+        try {
+            Naming.bind("rmi://127.0.0.1:1099/node_" + id, this);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void run() {
+        start();
     }
 
     public synchronized void start() {
@@ -133,7 +143,7 @@ public class DA_Randomized_Bryzantine_Agreement extends UnicastRemoteObject impl
     }
 
     public void broadcast(int value) {
-        Message message;
+        Message message = null;
         if (!round.hasNotified) {
             message = new Message(id, 1, round.id, value);
             round.hasNotified = true;
@@ -143,7 +153,16 @@ public class DA_Randomized_Bryzantine_Agreement extends UnicastRemoteObject impl
             round.hasProposed = true;
             round.processMessage(message);
         }
-        // TODO: broadcast
+        if (message == null) {
+            return;
+        }
+        for(int i = 0; i < nodeCount; i++) {
+            if (i == id) {
+                continue;
+            }
+            Node node = nodes[i];
+            node.sendMessage(message);
+        }
     }
 
     public boolean isValidMessage(Message message) {
