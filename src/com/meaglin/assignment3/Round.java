@@ -14,6 +14,12 @@ public class Round {
 
     boolean hasNotified = false, hasProposed = false;
 
+    /*
+        values:
+            0 or 1: found value
+            -1: no value yet received
+            -2: node cannot find consensus(only for proposals)
+     */
     int[] receivedNotifications;
     int[] receivedProposals;
 
@@ -49,6 +55,12 @@ public class Round {
         }
     }
 
+    /**
+     * Determine the notification consensus valu
+     *
+     * @return 0 or 1 if there is more then threshold of those values
+     *      -2 if no consensus could be reached
+     */
     int notificationConsensus() {
         int threshold = (nodeCount+failureCount) / 2;
         for(int o = 0; o < 2; o++) {

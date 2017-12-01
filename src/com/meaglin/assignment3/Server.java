@@ -5,9 +5,13 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.Enumeration;
 
-public class Server {
+public class Server extends UnicastRemoteObject {
+
+    public Server() throws RemoteException {
+    }
 
     public static String determineIP() throws SocketException {
         Enumeration e = NetworkInterface.getNetworkInterfaces();
@@ -35,6 +39,8 @@ public class Server {
     }
 
     public static void setupServer() throws SocketException {
+
+//        System.ge
 //        System.setProperty("java.security.policy","file:///Users/verburg/IdeaProjects/DAAssignment1/my.policy");
         System.setProperty("java.rmi.server.hostname", determineIP());
         try {java.rmi.registry.LocateRegistry.createRegistry(1099);} catch (RemoteException e) {e.printStackTrace();}

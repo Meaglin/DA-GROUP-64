@@ -1,6 +1,22 @@
 package com.meaglin.assignment3;
 
-public class Slave extends Server {
+import java.rmi.Naming;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Slave extends Server implements Slave_RMI {
+
+
+    public static Node[] nodes;
+    public static Node[] myNodes;
+
+    List<DA_Randomized_Bryzantine_Agreement> das = new ArrayList<>();
+
+    public Slave() throws RemoteException {
+
+    }
+
     public static void main(String[] args) throws Exception {
         String myIp = determineIP();
         if (myIp == null) {
@@ -10,5 +26,30 @@ public class Slave extends Server {
         System.out.println("My IP: " + myIp);
         setupServer();
 
+        Slave slave = new Slave();
+        Naming.bind("rmi://127.0.0.1:1099/slave", slave);
+
+        Master_RMI master = (Master_RMI) Naming.lookup("rmi://145.0.0.0:1099/master");
+        myNodes = master.register(5, myIp);
+    }
+
+    @Override
+    public void notify(Node[] nodes) {
+        Slave.nodes = nodes;
+        for (Node node : myNodes) {
+            try {
+                DA_Randomized_Bryzantine_Agreement da = new DA_Randomized_Bryzantine_Agreement(node.id, nodes);
+                das.add(da);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void start() {
+        for(DA_Randomized_Bryzantine_Agreement da : das) {
+            new Thread(da).start();
+        }
     }
 }
