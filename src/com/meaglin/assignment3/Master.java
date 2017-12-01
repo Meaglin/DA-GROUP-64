@@ -24,7 +24,7 @@ public class Master extends Server implements Master_RMI {
         System.out.println("My IP: " + myIp);
         setupServer();
         Master master = new Master();
-        Naming.bind("rmi://127.0.0.1:1099/master", master);
+        Naming.bind("rmi://127.0.0.1:1099/master", (Master_RMI) master);
 
         while(true) {
             Thread.sleep(1000);

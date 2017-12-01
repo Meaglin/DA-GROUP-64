@@ -27,7 +27,7 @@ public class Slave extends Server implements Slave_RMI {
         setupServer();
 
         Slave slave = new Slave();
-        Naming.bind("rmi://127.0.0.1:1099/slave", slave);
+        Naming.bind("rmi://127.0.0.1:1099/slave", (Slave_RMI) slave);
 
         Master_RMI master = (Master_RMI) Naming.lookup("rmi://145.0.0.0:1099/master");
         myNodes = master.register(5, myIp);
