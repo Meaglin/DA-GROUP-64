@@ -29,8 +29,7 @@ public class Round {
     Round(int roundId, int nodeCount) {
         id = roundId;
         this.nodeCount = nodeCount;
-        this.failureCount = (int) Math.floor(((double) nodeCount) / 5);
-
+        this.failureCount = (int) Math.floor(((double) nodeCount) / 5.0);
         receivedNotifications = new int[nodeCount];
         receivedProposals = new int[nodeCount];
         for(int i = 0; i < nodeCount; i++) {
@@ -63,48 +62,57 @@ public class Round {
      */
     int notificationConsensus() {
         int threshold = (nodeCount+failureCount) / 2;
-        for(int o = 0; o < 2; o++) {
-            int cnt = 0;
-            for(int i = 0; i < nodeCount;i++) {
-                if (receivedNotifications[i] == o) {
-                    cnt++;
-                }
+        int cnt0 = 0, cnt1 = 0;
+        for(int i = 0; i < nodeCount;i++) {
+            if (receivedNotifications[i] == 0) {
+                cnt0++;
+            } else if (receivedNotifications[i] == 1) {
+                cnt1++;
             }
-            if (cnt > threshold) {
-                return o;
-            }
+        }
+        if (cnt0 >= cnt1 && cnt0 > threshold) {
+            return 0;
+        }
+        if (cnt1 >= cnt0 && cnt1 > threshold) {
+            return 1;
         }
         return -2;
     }
 
     int proposalLowConsensus() {
         int threshold = failureCount;
-        for(int o = 0; o < 2; o++) {
-            int cnt = 0;
-            for(int i = 0; i < nodeCount;i++) {
-                if (receivedProposals[i] == o) {
-                    cnt++;
-                }
+        int cnt0 = 0, cnt1 = 0;
+        for(int i = 0; i < nodeCount;i++) {
+            if (receivedProposals[i] == 0) {
+                cnt0++;
+            } else if (receivedProposals[i] == 1) {
+                cnt1++;
             }
-            if (cnt > threshold) {
-                return o;
-            }
+        }
+        if (cnt0 >= cnt1 && cnt0 > threshold) {
+            return 0;
+        }
+        if (cnt1 >= cnt0 && cnt1 > threshold) {
+            return 1;
         }
         return -2;
     }
 
     int proposalDecidedConsensus() {
         int threshold = failureCount * 3;
-        for(int o = 0; o < 2; o++) {
-            int cnt = 0;
-            for(int i = 0; i < nodeCount;i++) {
-                if (receivedProposals[i] == o) {
-                    cnt++;
-                }
+        int cnt0 = 0, cnt1 = 0;
+        for(int i = 0; i < nodeCount;i++) {
+            if (receivedProposals[i] == 0) {
+                cnt0++;
+            } else if (receivedProposals[i] == 1) {
+                cnt1++;
             }
-            if (cnt > threshold) {
-                return o;
-            }
+        }
+        if (cnt0 >= cnt1 && cnt0 > threshold) {
+            return 0;
+        }
+        if (cnt1 >= cnt0 && cnt1 > threshold) {
+            return 1;
         }
         return -2;
     }

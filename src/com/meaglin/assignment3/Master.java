@@ -26,18 +26,28 @@ public class Master extends Server implements Master_RMI {
         Master master = new Master();
         Naming.bind("rmi://127.0.0.1:1099/master", (Master_RMI) master);
 
+        // Register my own nodes first
+        int nodeCount = 7;
+        myNodes = new Node[nodeCount];
+        synchronized (nodes) {
+            for (int i = 0; i < nodeCount; i++) {
+                myNodes[i] = new Node(nodes.size(), myIp);
+                nodes.add(myNodes[i]);
+            }
+        }
+
         while(true) {
             Thread.sleep(1000);
             synchronized (nodes) {
-                if (nodes.size() > 0) {
+                if (nodes.size() >= nodeCount) {
                     break;
                 }
             }
         }
-        myNodes = master.register(5, myIp);
 
-        // First notify all nodes
+        // Notify all nodes
         for(String ip : slaves) {
+            System.out.println("rmi://" + ip + ":1099/slave");
             Slave_RMI slave = (Slave_RMI) Naming.lookup("rmi://" + ip + ":1099/slave");
             slave.notify(nodes.toArray(new Node[nodes.size()]));
         }
