@@ -8,6 +8,8 @@ import java.util.List;
 
 public class Master extends Server implements Master_RMI {
 
+    public static boolean DEBUG = true;
+
     static List<Node> nodes = new ArrayList<>();
     static List<String> slaves = new ArrayList<>();
     static Node[] myNodes;
@@ -24,6 +26,7 @@ public class Master extends Server implements Master_RMI {
         System.out.println("My IP: " + myIp);
         setupServer();
         Master master = new Master();
+        CommunicationBus bus = new RMICommunicationBus();
         Naming.bind("rmi://127.0.0.1:1099/master", (Master_RMI) master);
 
         // Register my own nodes first
@@ -56,7 +59,7 @@ public class Master extends Server implements Master_RMI {
         List<DA_Randomized_Bryzantine_Agreement> das = new ArrayList<>();
         for (Node node : myNodes) {
             try {
-                DA_Randomized_Bryzantine_Agreement da = new DA_Randomized_Bryzantine_Agreement(node.id, nodes.toArray(new Node[nodes.size()]));
+                DA_Randomized_Bryzantine_Agreement da = new DA_Randomized_Bryzantine_Agreement(node.id, nodes.toArray(new Node[nodes.size()]), bus);
                 das.add(da);
             } catch (RemoteException e) {
                 e.printStackTrace();

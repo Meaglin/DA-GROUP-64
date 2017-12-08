@@ -35,10 +35,11 @@ public class Slave extends Server implements Slave_RMI {
 
     @Override
     public void notify(Node[] nodes) {
+        CommunicationBus bus = new RMICommunicationBus();
         Slave.nodes = nodes;
         for (Node node : myNodes) {
             try {
-                DA_Randomized_Bryzantine_Agreement da = new DA_Randomized_Bryzantine_Agreement(node.id, nodes);
+                DA_Randomized_Bryzantine_Agreement da = new DA_Randomized_Bryzantine_Agreement(node.id, nodes, bus);
                 das.add(da);
             } catch (RemoteException e) {
                 e.printStackTrace();

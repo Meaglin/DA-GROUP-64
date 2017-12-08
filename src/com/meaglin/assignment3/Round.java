@@ -8,7 +8,7 @@ public class Round {
         DECISION
     }
 
-    final int id, nodeCount, failureCount;
+    public final int id, nodeCount, failureCount;
 
     Phase phase = Phase.NOTIFICATION;
 

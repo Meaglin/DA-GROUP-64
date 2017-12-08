@@ -1,6 +1,5 @@
 package com.meaglin.assignment3;
 
-import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
@@ -12,43 +11,47 @@ public class DA_Randomized_Bryzantine_Agreement extends UnicastRemoteObject impl
 
     int id, nodeCount;
 
-    Round round;
+    public Round round;
 
     List<Message> bufferedMessages;
 
     Node[] nodes;
 
-    volatile int value;
+    public volatile int value;
+    public boolean decided;
 
-    boolean decided;
+    CommunicationBus bus;
 
-    public DA_Randomized_Bryzantine_Agreement(int nodeId, Node[] nodes) throws RemoteException {
+    public DA_Randomized_Bryzantine_Agreement(int nodeId, Node[] nodes, CommunicationBus bus) throws RemoteException {
         super();
         id = nodeId;
         this.nodeCount = nodes.length;
         this.nodes = nodes;
-
-
+        this.bus = bus;
         bufferedMessages = new ArrayList<>();
 
-        try {
-            Naming.bind("rmi://127.0.0.1:1099/node_" + id, this);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        bus.register(nodes[nodeId], this);
     }
 
     public void run() {
         start();
     }
 
-    public void start() {
+    public void init() {
         synchronized (this) {
             round = new Round(0, nodeCount);
-//            value = 1;
             value = (int) Math.floor(Math.random() * 2);
             decided = false;
-            System.out.println("[Node " + id + "] starting round 0 with value " + value);
+            if (Master.DEBUG) System.out.println("[Node " + id + "] starting round 0 with value " + value);
+        }
+    }
+
+    public void start() {
+        init();
+        try {
+            Thread.sleep(5);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
         broadcast(value);
     }
@@ -109,20 +112,20 @@ public class DA_Randomized_Bryzantine_Agreement extends UnicastRemoteObject impl
      */
     @Override
     public void receive(Message message) throws RemoteException {
-        System.out.println("[Node " + id + "] receiving " + message.value);
+        if (Master.DEBUG) System.out.println("[Node " + id + "] receiving " + message.value);
         int nextBroadcast;
         try {
-            Thread.sleep((long) (Math.random() * 5));
+            Thread.sleep((long) (Math.random() * 2));
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
         //System.out.println("[Node " + id + "] processes " + message.value);
         nextBroadcast = processMessage(message);
-        System.out.println("[Node " + id + "] nextBroadcast " + nextBroadcast);
+        if (Master.DEBUG) System.out.println("[Node " + id + "] nextBroadcast " + nextBroadcast);
         if (nextBroadcast != -1) {
             broadcast(nextBroadcast);
-            System.out.println("[Node " + id + "] broadcasted " + nextBroadcast);
+            if (Master.DEBUG) System.out.println("[Node " + id + "] broadcasted " + nextBroadcast);
         }
         checkBuffer();
     }
@@ -143,18 +146,18 @@ public class DA_Randomized_Bryzantine_Agreement extends UnicastRemoteObject impl
                 bufferedMessages.add(message);
                 return -1;
             }
-            System.out.println("[Node " + id + "] processing " + message.value);
+            if (Master.DEBUG) System.out.println("[Node " + id + "] processing " + message.value);
             round.processMessage(message);
             if (round.phase == Round.Phase.NOTIFICATION &&
                     round.notificationThresholdReached()) {
-                System.out.println("[Node " + id + "] STARTING PROPOSAL PHASE");
+                if (Master.DEBUG) System.out.println("[Node " + id + "] STARTING PROPOSAL PHASE");
                 round.phase = Round.Phase.PROPOSAL;
                 int proposal = round.notificationConsensus();
-                System.out.println("[Node " + id + "] PROPOSES " + value);
+                if (Master.DEBUG) System.out.println("[Node " + id + "] PROPOSES " + value);
                 return proposal;
             } else if (round.phase == Round.Phase.PROPOSAL &&
                     round.proposalThresholdReached()) {
-                System.out.println("[Node " + id + "] STARTING DECISION PHASE");
+                if (Master.DEBUG) System.out.println("[Node " + id + "] STARTING DECISION PHASE");
                 round.phase = Round.Phase.DECISION;
                 int lowConsensus = round.proposalLowConsensus();
                 if (lowConsensus == 0 || lowConsensus == 1) {
@@ -163,15 +166,15 @@ public class DA_Randomized_Bryzantine_Agreement extends UnicastRemoteObject impl
                     if (decidedConsensus == 0 || decidedConsensus == 1) {
                         decided = true;
                         value = decidedConsensus;
-                        System.out.println("[Node " + id + "] DECIDES " + value);
+                        if (Master.DEBUG) System.out.println("[Node " + id + "] DECIDES " + value);
                         return -1;
                     }
                 } else {
                     value = (int) Math.floor(Math.random() * 2);
                 }
                 round = new Round(round.id + 1, nodeCount);
-                System.out.println("[Node " + id + "] STARTING ROUND " + round.id);
-                System.out.println("[Node " + id + "] AND DECIDES " + value);
+                if (Master.DEBUG) System.out.println("[Node " + id + "] STARTING ROUND " + round.id);
+//                if (Master.DEBUG) System.out.println("[Node " + id + "] AND DECIDES " + value);
                 return value;
             } else {
                 return -1;
@@ -214,7 +217,8 @@ public class DA_Randomized_Bryzantine_Agreement extends UnicastRemoteObject impl
         //System.out.println("[Node " + id + "] broadcasting " + message.value);
         for(int i = 0; i < nodeCount; i++) {
             Node node = nodes[i];
-            node.sendMessage(message);
+            bus.send(node, message);
+//            node.sendMessage(message);
         }
     }
 
