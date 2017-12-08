@@ -29,7 +29,9 @@ public class Round {
     Round(int roundId, int nodeCount) {
         id = roundId;
         this.nodeCount = nodeCount;
+
         this.failureCount = (int) Math.floor(((double) nodeCount) / 5.0);
+
         receivedNotifications = new int[nodeCount];
         receivedProposals = new int[nodeCount];
         for(int i = 0; i < nodeCount; i++) {
@@ -55,13 +57,18 @@ public class Round {
     }
 
     /**
-     * Determine the notification consensus valu
+     * Determine the notification consensus value
      *
      * @return 0 or 1 if there is more then threshold of those values
      *      -2 if no consensus could be reached
      */
     int notificationConsensus() {
-        int threshold = (nodeCount+failureCount) / 2;
+        int threshold;
+        if ( (nodeCount+failureCount)% 2 != 0) {
+            threshold = (nodeCount+failureCount-1) / 2;
+        } else {
+            threshold = (nodeCount+failureCount) / 2;
+        }
         int cnt0 = 0, cnt1 = 0;
         for(int i = 0; i < nodeCount;i++) {
             if (receivedNotifications[i] == 0) {

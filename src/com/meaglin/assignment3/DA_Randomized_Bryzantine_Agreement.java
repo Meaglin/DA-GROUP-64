@@ -80,6 +80,7 @@ public class DA_Randomized_Bryzantine_Agreement extends UnicastRemoteObject impl
             end
         end
 
+    n/5 > f
     r←1
     decided← false
         do forever
@@ -111,7 +112,7 @@ public class DA_Randomized_Bryzantine_Agreement extends UnicastRemoteObject impl
         System.out.println("[Node " + id + "] receiving " + message.value);
         int nextBroadcast;
         try {
-            Thread.sleep((long) (Math.random() * 50));
+            Thread.sleep((long) (Math.random() * 5));
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
