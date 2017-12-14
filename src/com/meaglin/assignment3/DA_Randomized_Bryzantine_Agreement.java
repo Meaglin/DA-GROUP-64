@@ -31,6 +31,8 @@ public class DA_Randomized_Bryzantine_Agreement extends UnicastRemoteObject impl
         bufferedMessages = new ArrayList<>();
 
         bus.register(nodes[nodeId], this);
+
+        setup();
     }
 
     public void run() {
@@ -38,11 +40,15 @@ public class DA_Randomized_Bryzantine_Agreement extends UnicastRemoteObject impl
         start();
     }
 
+    private void setup() {
+        round = new Round(1, nodeCount);
+        value = (int) Math.floor(Math.random() * 2);
+        decided = false;
+    }
+
     public void init() {
         synchronized (this) {
-            round = new Round(0, nodeCount);
-            value = (int) Math.floor(Math.random() * 2);
-            decided = false;
+            setup();
             if (Master.DEBUG) System.out.println("[Node " + id + "] starting round 0 with value " + value);
         }
     }
@@ -120,7 +126,6 @@ public class DA_Randomized_Bryzantine_Agreement extends UnicastRemoteObject impl
             e.printStackTrace();
         }
 
-        //System.out.println("[Node " + id + "] processes " + message.value);
         nextBroadcast = processMessage(message);
         if (Master.DEBUG) System.out.println("[Node " + id + "] nextBroadcast " + nextBroadcast);
         if (nextBroadcast != -1) {

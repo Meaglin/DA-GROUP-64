@@ -8,7 +8,7 @@ import java.rmi.RemoteException;
 import static org.junit.Assert.assertEquals;
 
 
-public class Nodes_21_silent_test {
+public class Nodes_21_silent_test extends BaseTest {
     @Test
     public void run() throws RemoteException {
         int nodeCount = 21;
@@ -26,6 +26,7 @@ public class Nodes_21_silent_test {
             }
             threads[i] = new Thread(interfaces[i]);
         }
+        reportStart(interfaces);
         for(int i = 0; i < nodes.length; i ++) {
             threads[i].start();
         }
@@ -48,6 +49,7 @@ public class Nodes_21_silent_test {
         for(int i = 0; i < (nodeCount-faulty); i++) {
             assertEquals(interfaces[0].value, interfaces[i].value);
         }
-        System.out.println("Took " + interfaces[0].round.id + " rounds");
+        reportEnd(interfaces);
+//        System.out.println("Took " + interfaces[0].round.id + " rounds");
     }
 }

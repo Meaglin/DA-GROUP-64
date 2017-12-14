@@ -10,7 +10,7 @@ import java.rmi.RemoteException;
 
 import static org.junit.Assert.assertEquals;
 
-public class Nodes_7_test {
+public class Nodes_7_test extends BaseTest {
 
     @Test
     public void run() throws RemoteException {
@@ -24,6 +24,7 @@ public class Nodes_7_test {
             interfaces[i] = new DA_Randomized_Bryzantine_Agreement(i, nodes, bus);
             threads[i] = new Thread(interfaces[i]);
         }
+        reportStart(interfaces);
         for(int i = 0; i < nodes.length; i ++) {
             threads[i].start();
         }
@@ -46,7 +47,8 @@ public class Nodes_7_test {
         for(int i = 0; i < nodes.length; i++) {
             assertEquals(interfaces[0].value, interfaces[i].value);
         }
-        System.out.println("Took " + interfaces[0].round.id + " rounds");
+        reportEnd(interfaces);
+//        System.out.println("Took " + interfaces[0].round.id + " rounds");
     }
 
 

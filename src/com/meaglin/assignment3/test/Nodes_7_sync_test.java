@@ -11,7 +11,7 @@ import java.rmi.RemoteException;
 import static junit.framework.TestCase.assertEquals;
 
 
-public class Nodes_7_sync_test {
+public class Nodes_7_sync_test extends BaseTest {
     @Test
     public void run() throws RemoteException {
         int nodeCount = 7;
@@ -25,12 +25,14 @@ public class Nodes_7_sync_test {
         for(int i = 0; i < nodes.length; i ++) {
             interfaces[i].init();
         }
+        reportStart(interfaces);
         for(int i = 0; i < nodes.length; i ++) {
             interfaces[i].broadcast(interfaces[i].value);
         }
         for(int i = 0; i < nodes.length; i++) {
             assertEquals(interfaces[0].value, interfaces[i].value);
         }
-        System.out.println("Took " + interfaces[0].round.id + " rounds");
+        reportEnd(interfaces);
+//        System.out.println("Took " + interfaces[0].round.id + " rounds");
     }
 }

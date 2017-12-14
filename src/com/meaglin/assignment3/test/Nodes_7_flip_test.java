@@ -1,6 +1,7 @@
 package com.meaglin.assignment3.test;
 
 import com.meaglin.assignment3.*;
+import com.sun.xml.internal.rngom.parse.host.Base;
 import org.junit.Test;
 
 import java.rmi.RemoteException;
@@ -8,7 +9,7 @@ import java.rmi.RemoteException;
 import static org.junit.Assert.assertEquals;
 
 
-public class Nodes_7_flip_test {
+public class Nodes_7_flip_test extends BaseTest {
 
     @Test
     public void run() throws RemoteException {
@@ -26,6 +27,7 @@ public class Nodes_7_flip_test {
             }
             threads[i] = new Thread(interfaces[i]);
         }
+        reportStart(interfaces);
         for(int i = 0; i < nodes.length; i ++) {
             threads[i].start();
         }
@@ -48,6 +50,7 @@ public class Nodes_7_flip_test {
         for(int i = 0; i < (nodes.length - 1); i++) {
             assertEquals(interfaces[0].value, interfaces[i].value);
         }
-        System.out.println("Took " + interfaces[0].round.id + " rounds");
+        reportEnd(interfaces);
+//        System.out.println("Took " + interfaces[0].round.id + " rounds");
     }
 }
