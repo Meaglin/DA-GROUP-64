@@ -8,7 +8,7 @@ import java.util.List;
 
 public class Master extends Server implements Master_RMI {
 
-    public static boolean DEBUG = true;
+    public static boolean DEBUG = false;
 
     static List<Node> nodes = new ArrayList<>();
     static List<String> slaves = new ArrayList<>();

@@ -1,12 +1,14 @@
 package com.meaglin.assignment1;
 
+import org.junit.Test;
+
 import java.rmi.RemoteException;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.assertArrayEquals;
 
 class DA_Birman_Schiper_StephenTest {
 
-    @org.junit.jupiter.api.Test
+    @Test
     void receive() throws RemoteException {
         System.out.println("Test");
         DA_Birman_Schiper_Stephen iface = new DA_Birman_Schiper_Stephen(0, 3);
@@ -20,7 +22,7 @@ class DA_Birman_Schiper_StephenTest {
 
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void receive2() throws RemoteException {
 
         System.out.println("Test2");

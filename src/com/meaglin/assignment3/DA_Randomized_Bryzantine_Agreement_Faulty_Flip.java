@@ -9,7 +9,7 @@ public class DA_Randomized_Bryzantine_Agreement_Faulty_Flip extends DA_Randomize
 
     @Override
     public void broadcast(int value) {
-        if ((value == 0 || value == 1) && Math.random() < 0.9) { // Randomly flip
+        if ((value == 0 || value == 1) && Math.random() < 0.5) { // Randomly flip
             value = value == 1 ? 0 : 1;
         }
         super.broadcast(value);

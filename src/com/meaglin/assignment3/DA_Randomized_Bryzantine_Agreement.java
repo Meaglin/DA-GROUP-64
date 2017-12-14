@@ -34,6 +34,7 @@ public class DA_Randomized_Bryzantine_Agreement extends UnicastRemoteObject impl
     }
 
     public void run() {
+        init();
         start();
     }
 
@@ -47,7 +48,6 @@ public class DA_Randomized_Bryzantine_Agreement extends UnicastRemoteObject impl
     }
 
     public void start() {
-        init();
         try {
             Thread.sleep(5);
         } catch (InterruptedException e) {

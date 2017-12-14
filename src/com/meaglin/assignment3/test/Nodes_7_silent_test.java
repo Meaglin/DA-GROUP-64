@@ -1,14 +1,16 @@
 package com.meaglin.assignment3.test;
 
 import com.meaglin.assignment3.*;
+import org.junit.Test;
 
 import java.rmi.RemoteException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
+
 
 public class Nodes_7_silent_test {
-    @org.junit.jupiter.api.Test
-    void run() throws RemoteException {
+    @Test
+    public void run() throws RemoteException {
         int nodeCount = 7;
         CommunicationBus bus = new LocalCommunicationBus(nodeCount);
         Node[] nodes = new Node[nodeCount];

@@ -4,14 +4,16 @@ import com.meaglin.assignment3.CommunicationBus;
 import com.meaglin.assignment3.DA_Randomized_Bryzantine_Agreement;
 import com.meaglin.assignment3.LocalCommunicationBus;
 import com.meaglin.assignment3.Node;
+import org.junit.Test;
 
 import java.rmi.RemoteException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static junit.framework.TestCase.assertEquals;
+
 
 public class Nodes_7_sync_test {
-    @org.junit.jupiter.api.Test
-    void run() throws RemoteException {
+    @Test
+    public void run() throws RemoteException {
         int nodeCount = 7;
         CommunicationBus bus = new LocalCommunicationBus(nodeCount);
         Node[] nodes = new Node[nodeCount];
